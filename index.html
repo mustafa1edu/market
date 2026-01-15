@@ -714,6 +714,11 @@
             color: var(--success-color);
         }
 
+        .badge-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+
         /* وەرگرتنی تایبەتمەندییەکانی سیستەم */
         .system-info {
             margin-top: 25px;
@@ -786,6 +791,22 @@
             background-color: var(--primary-color);
             border-radius: 3px;
             transition: width 0.5s ease;
+        }
+
+        /* پارەدان */
+        .payment-form {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+        }
+
+        .remaining-amount {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 15px;
         }
 
         /* جیاوازی بەرەنگاری بچووکترین ئەکرینەکان */
@@ -1005,7 +1026,7 @@
             <button class="month-nav" id="prev-month">
                 <i class="fas fa-chevron-right"></i>
             </button>
-            <div class="month-title" id="report-month">مانگی ٥ - ٢٠٢٣</div>
+            <div class="month-title" id="report-month">مانگی 5 - 2023</div>
             <button class="month-nav" id="next-month">
                 <i class="fas fa-chevron-left"></i>
             </button>
@@ -1204,7 +1225,7 @@
             <div class="card-body">
                 <div class="info-item">
                     <div class="info-label">وەشانی ئەپ</div>
-                    <div class="info-value">1.2.0</div>
+                    <div class="info-value">1.3.0</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">کۆی گشتی کەسەکان</div>
@@ -1250,9 +1271,9 @@
                     <i class="fas fa-trash"></i>
                     سڕینەوە
                 </button>
-                <button class="btn btn-info" id="mark-paid" style="flex: 1;">
-                    <i class="fas fa-check"></i>
-                    نیشانەکردنی پارەدراو
+                <button class="btn btn-success" id="add-payment" style="flex: 1;">
+                    <i class="fas fa-money-bill-wave"></i>
+                    زیادکردنی پارەدان
                 </button>
             </div>
         </div>
@@ -1330,6 +1351,42 @@
         </div>
     </div>
 
+    <!-- پارەدان -->
+    <div class="detail-view" id="payment-view">
+        <div class="detail-header">
+            <div>
+                <h3 id="payment-title">پارەدان</h3>
+                <p id="payment-subtitle"></p>
+            </div>
+            <button class="close-detail" id="close-payment">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="detail-content">
+            <div id="payment-content">
+                <!-- زانیاری پارەدان لێرە دێت -->
+            </div>
+            <form id="payment-form">
+                <div class="form-group">
+                    <label for="payment-amount">بڕی پارەی دراو (دینار)</label>
+                    <input type="number" id="payment-amount" class="form-control" min="1" required placeholder="بڕی پارە بنووسە">
+                </div>
+                <div class="form-group">
+                    <label for="payment-date">بەرواری پارەدان</label>
+                    <input type="date" id="payment-date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="payment-notes">تێبینی (ئارەزوومەندانە)</label>
+                    <textarea id="payment-notes" class="form-control" rows="3" placeholder="تێبینیێک بۆ ئەم پارەدانە زیاد بکە"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success btn-block">
+                    <i class="fas fa-check"></i>
+                    تەواوکردنی پارەدان
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- بۆتۆم نێڤ -->
     <div class="bottom-nav">
         <a href="#" class="nav-item active" data-page="home">
@@ -1354,6 +1411,7 @@
         // زانیاریەکان
         let people = [];
         let debts = [];
+        let payments = [];
         let currentPersonId = null;
         let currentDebtId = null;
         let currentMonth = new Date().getMonth() + 1;
@@ -1391,8 +1449,9 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('quick-date').value = today;
             document.getElementById('debt-date').value = today;
+            document.getElementById('payment-date').value = today;
             
-            if (people.length === 0) {
+            if (people.length === 0 && debts.length === 0 && payments.length === 0) {
                 createSampleData();
             }
             
@@ -1404,6 +1463,7 @@
         function loadData() {
             const savedPeople = localStorage.getItem('debtPeople');
             const savedDebts = localStorage.getItem('debtDebts');
+            const savedPayments = localStorage.getItem('debtPayments');
             const savedSettings = localStorage.getItem('debtSettings');
             
             if (savedPeople) {
@@ -1412,6 +1472,10 @@
             
             if (savedDebts) {
                 debts = JSON.parse(savedDebts);
+            }
+            
+            if (savedPayments) {
+                payments = JSON.parse(savedPayments);
             }
             
             if (savedSettings) {
@@ -1424,6 +1488,7 @@
         function saveData() {
             localStorage.setItem('debtPeople', JSON.stringify(people));
             localStorage.setItem('debtDebts', JSON.stringify(debts));
+            localStorage.setItem('debtPayments', JSON.stringify(payments));
             localStorage.setItem('debtSettings', JSON.stringify(settings));
             updateSystemInfo();
         }
@@ -1541,20 +1606,20 @@
             people = [
                 { id: 1, name: "عەلی محەممەد", phone: "07501234567", notes: "هاوکاری ماڵ", createdAt: new Date().toISOString() },
                 { id: 2, name: "سارە عەبدوڵڵا", phone: "07701234567", notes: "هاوکاری کار", createdAt: new Date().toISOString() },
-                { id: 3, name: "حوسێن ڕەسوڵ", phone: "07511234567", notes: "هاوکاری خزم", createdAt: new Date().toISOString() },
-                { id: 4, name: "نینا عەزیز", phone: "07711234567", notes: "هاوکاری فێرگە", createdAt: new Date().toISOString() }
+                { id: 3, name: "حوسێن ڕەسوڵ", phone: "07511234567", notes: "هاوکاری خزم", createdAt: new Date().toISOString() }
             ];
             
             const now = new Date();
             const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
-            const twoMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, now.getDate());
             
             debts = [
-                { id: 1, personId: 1, amount: 150000, date: now.toISOString(), notes: "بۆ نان", status: "active", createdAt: now.toISOString() },
-                { id: 2, personId: 2, amount: 75000, date: now.toISOString(), notes: "بۆ سووتەمەنی", status: "active", createdAt: now.toISOString() },
-                { id: 3, personId: 3, amount: 200000, date: lastMonth.toISOString(), notes: "قەرزی کۆن", status: "overdue", createdAt: lastMonth.toISOString() },
-                { id: 4, personId: 4, amount: 50000, date: twoMonthsAgo.toISOString(), notes: "بۆ کتێب", status: "overdue", createdAt: twoMonthsAgo.toISOString() },
-                { id: 5, personId: 1, amount: 100000, date: now.toISOString(), notes: "قەرزی زیادە", status: "active", createdAt: now.toISOString() }
+                { id: 1, personId: 1, amount: 150000, date: now.toISOString(), notes: "بۆ نان", status: "active", originalAmount: 150000, paidAmount: 0, createdAt: now.toISOString() },
+                { id: 2, personId: 2, amount: 75000, date: now.toISOString(), notes: "بۆ سووتەمەنی", status: "active", originalAmount: 75000, paidAmount: 25000, createdAt: now.toISOString() },
+                { id: 3, personId: 3, amount: 200000, date: lastMonth.toISOString(), notes: "قەرزی کۆن", status: "overdue", originalAmount: 200000, paidAmount: 0, createdAt: lastMonth.toISOString() }
+            ];
+            
+            payments = [
+                { id: 1, debtId: 2, amount: 25000, date: now.toISOString(), notes: "یەکەم پارەدان", createdAt: now.toISOString() }
             ];
             
             saveData();
@@ -1593,7 +1658,10 @@
             
             people.forEach(person => {
                 const personDebts = debts.filter(debt => debt.personId === person.id && debt.status === 'active');
-                const totalDebt = personDebts.reduce((sum, debt) => sum + debt.amount, 0);
+                const totalDebt = personDebts.reduce((sum, debt) => sum + (debt.amount || 0), 0);
+                const totalPaid = personDebts.reduce((sum, debt) => sum + (debt.paidAmount || 0), 0);
+                const totalOriginal = personDebts.reduce((sum, debt) => sum + (debt.originalAmount || debt.amount || 0), 0);
+                const remaining = totalOriginal - totalPaid;
                 
                 const personItem = document.createElement('div');
                 personItem.className = 'person-item';
@@ -1602,7 +1670,8 @@
                     <div class="person-info">
                         <h3>${person.name}</h3>
                         <p>${person.phone}</p>
-                        <p><small>کۆی قەرز: ${formatCurrency(totalDebt)}</small></p>
+                        <p><small>کۆی قەرز: ${formatCurrency(remaining)}</small></p>
+                        ${totalPaid > 0 ? `<p><small>پارەدراو: ${formatCurrency(totalPaid)}</small></p>` : ''}
                     </div>
                     <div>
                         <i class="fas fa-chevron-left"></i>
@@ -1635,6 +1704,9 @@
             const oldMonthItems = [];
             let overdueCount = 0;
             
+            // پێش هەڵسەنگاندن، چێک بکە بۆ پارەدانەکان و قەرزەکان نوێ بکەرەوە
+            updateDebtAmounts();
+            
             debts.forEach(debt => {
                 const debtDate = new Date(debt.date);
                 const person = people.find(p => p.id === debt.personId);
@@ -1650,14 +1722,31 @@
                 const debtClass = isOverdue ? 'debt-overdue' : '';
                 const personName = person ? person.name : 'کەسی نەناسراو';
                 
+                // حسابکردنی پارەدراوەکان
+                const originalAmount = debt.originalAmount || debt.amount;
+                const paidAmount = debt.paidAmount || 0;
+                const remainingAmount = originalAmount - paidAmount;
+                
+                // بڕی نیشاندراو
+                let displayAmount = formatCurrency(remainingAmount);
+                if (paidAmount > 0) {
+                    displayAmount = `
+                        <div>${formatCurrency(remainingAmount)}</div>
+                        <div style="font-size: 0.9rem; color: #666; text-decoration: line-through;">
+                            ${formatCurrency(originalAmount)}
+                        </div>
+                    `;
+                }
+                
                 debtItem.innerHTML = `
                     <div class="debt-info">
                         <h3>${personName} ${isQuick ? '<span class="badge">خێرا</span>' : ''}</h3>
                         <p>${formatDate(debt.date)} - ${debt.notes || '(بێ تێبینی)'}</p>
                         ${isOverdue ? '<p class="badge badge-danger">کۆن</p>' : ''}
+                        ${paidAmount > 0 ? `<p class="badge badge-success">پارەدراو: ${formatCurrency(paidAmount)}</p>` : ''}
                     </div>
                     <div class="debt-amount ${debtClass}">
-                        ${formatCurrency(debt.amount)}
+                        ${displayAmount}
                     </div>
                 `;
                 
@@ -1705,6 +1794,37 @@
             
             loadQuickDebtList();
             updateSystemInfo();
+        }
+
+        // نوێکردنەوەی بڕی قەرزەکان لەسەر بنەمای پارەدانەکان
+        function updateDebtAmounts() {
+            debts.forEach(debt => {
+                // گەڕان بۆ هەموو پارەدانەکان بۆ ئەم قەرزە
+                const debtPayments = payments.filter(payment => payment.debtId === debt.id);
+                const totalPaid = debtPayments.reduce((sum, payment) => sum + payment.amount, 0);
+                
+                // نوێکردنەوەی بڕی پارەدراو
+                debt.paidAmount = totalPaid;
+                
+                // نوێکردنەوەی بڕی ماوە
+                const originalAmount = debt.originalAmount || debt.amount;
+                const remainingAmount = originalAmount - totalPaid;
+                
+                // ئەگەر پارەدراو تەواو بوو، قەرزەکە بکە بە پارەدراو
+                if (remainingAmount <= 0) {
+                    debt.status = 'paid';
+                    debt.amount = 0;
+                } else {
+                    debt.amount = remainingAmount;
+                }
+                
+                // ئەگەر originalAmount نەبوو، زیادبکە
+                if (!debt.originalAmount) {
+                    debt.originalAmount = debt.amount + totalPaid;
+                }
+            });
+            
+            saveData();
         }
 
         // بارکردنی لیستی قەرزی خێرا
@@ -1802,6 +1922,7 @@
 
         // ڕێکخستنی فۆرمەکان
         function setupForms() {
+            // فۆرمی قەرزی خێرا
             document.getElementById('quick-debt-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -1816,9 +1937,11 @@
                     personName: name,
                     personPhone: phone,
                     amount: amount,
+                    originalAmount: amount,
                     date: date,
                     notes: notes,
                     status: 'quick',
+                    paidAmount: 0,
                     createdAt: new Date().toISOString()
                 };
                 
@@ -1837,6 +1960,7 @@
                 }
             });
             
+            // فۆرمی زیادکردنی کەس
             document.getElementById('add-person-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -1867,6 +1991,7 @@
                 }
             });
             
+            // فۆرمی زیادکردنی قەرز
             document.getElementById('add-debt-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -1879,9 +2004,11 @@
                     id: Date.now(),
                     personId: personId,
                     amount: amount,
+                    originalAmount: amount,
                     date: date,
                     notes: notes,
                     status: 'active',
+                    paidAmount: 0,
                     createdAt: new Date().toISOString()
                 };
                 
@@ -1900,10 +2027,82 @@
                     navigator.vibrate(100);
                 }
             });
+            
+            // فۆرمی پارەدان
+            document.getElementById('payment-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const paymentAmount = parseInt(document.getElementById('payment-amount').value);
+                const paymentDate = document.getElementById('payment-date').value;
+                const paymentNotes = document.getElementById('payment-notes').value;
+                
+                if (!currentDebtId) {
+                    showNotification('هیچ قەرزێک دیاری نەکراوە!', 'error');
+                    return;
+                }
+                
+                const debt = debts.find(d => d.id === currentDebtId);
+                if (!debt) {
+                    showNotification('قەرزەکە نەدۆزرایەوە!', 'error');
+                    return;
+                }
+                
+                const originalAmount = debt.originalAmount || debt.amount;
+                const currentPaid = debt.paidAmount || 0;
+                const remaining = originalAmount - currentPaid;
+                
+                if (paymentAmount > remaining) {
+                    showNotification(`بڕی پارەی دراو نابێت زیاتر بێت لە ${formatCurrency(remaining)}!`, 'error');
+                    return;
+                }
+                
+                if (paymentAmount <= 0) {
+                    showNotification('بڕی پارە نابێت بچووکتر یان یەکسان بێت بە صفر!', 'error');
+                    return;
+                }
+                
+                // زیادکردنی پارەدان
+                const newPayment = {
+                    id: Date.now(),
+                    debtId: currentDebtId,
+                    amount: paymentAmount,
+                    date: paymentDate,
+                    notes: paymentNotes,
+                    createdAt: new Date().toISOString()
+                };
+                
+                payments.push(newPayment);
+                
+                // نوێکردنەوەی قەرز
+                debt.paidAmount = (debt.paidAmount || 0) + paymentAmount;
+                
+                // ئەگەر پارەدراو تەواو بوو
+                if (debt.paidAmount >= originalAmount) {
+                    debt.status = 'paid';
+                    debt.amount = 0;
+                } else {
+                    debt.amount = originalAmount - debt.paidAmount;
+                }
+                
+                saveData();
+                
+                hidePaymentView();
+                this.reset();
+                document.getElementById('payment-date').value = new Date().toISOString().split('T')[0];
+                
+                loadDebts();
+                
+                showNotification(`پارەدان بە سەرکەوتوویی تۆمارکرا! ${formatCurrency(paymentAmount)}`);
+                
+                if (settings.vibration && 'vibrate' in navigator) {
+                    navigator.vibrate(100);
+                }
+            });
         }
 
         // ڕێکخستنی وردەکاری
         function setupDetailView() {
+            // دوگمەکانی داخستن
             document.querySelectorAll('.close-detail').forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('.detail-view').forEach(view => {
@@ -1912,10 +2111,12 @@
                 });
             });
             
+            // زیادکردنی کەس
             document.getElementById('add-person').addEventListener('click', function() {
                 showAddPersonView();
             });
             
+            // دەستکاری
             document.getElementById('edit-detail').addEventListener('click', function() {
                 if (currentPersonId) {
                     editPerson(currentPersonId);
@@ -1924,6 +2125,7 @@
                 }
             });
             
+            // سڕینەوە
             document.getElementById('delete-detail').addEventListener('click', function() {
                 if (currentPersonId) {
                     deletePerson(currentPersonId);
@@ -1932,9 +2134,12 @@
                 }
             });
             
-            document.getElementById('mark-paid').addEventListener('click', function() {
+            // زیادکردنی پارەدان
+            document.getElementById('add-payment').addEventListener('click', function() {
                 if (currentDebtId) {
-                    markDebtAsPaid(currentDebtId);
+                    showPaymentView(currentDebtId);
+                } else {
+                    showNotification('تکایە یەک قەرز هەڵبژێرە بۆ پارەدان!', 'error');
                 }
             });
         }
@@ -1978,7 +2183,9 @@
             currentDebtId = null;
             
             const personDebts = debts.filter(debt => debt.personId === personId);
-            const totalDebt = personDebts.reduce((sum, debt) => sum + debt.amount, 0);
+            const totalOriginal = personDebts.reduce((sum, debt) => sum + (debt.originalAmount || debt.amount || 0), 0);
+            const totalPaid = personDebts.reduce((sum, debt) => sum + (debt.paidAmount || 0), 0);
+            const remaining = totalOriginal - totalPaid;
             const activeDebts = personDebts.filter(debt => debt.status === 'active');
             const overdueDebts = personDebts.filter(debt => debt.status === 'overdue');
             const paidDebts = personDebts.filter(debt => debt.status === 'paid');
@@ -2001,20 +2208,20 @@
                 </div>
                 <div class="stats" style="margin-top: 20px;">
                     <div class="stat-item">
-                        <div class="stat-value">${formatCurrency(totalDebt)}</div>
+                        <div class="stat-value">${formatCurrency(totalOriginal)}</div>
                         <div class="stat-label">کۆی قەرز</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value">${activeDebts.length}</div>
-                        <div class="stat-label">چالاک</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${overdueDebts.length}</div>
-                        <div class="stat-label">کۆن</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${paidDebts.length}</div>
+                        <div class="stat-value">${formatCurrency(totalPaid)}</div>
                         <div class="stat-label">پارەدراو</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${formatCurrency(remaining)}</div>
+                        <div class="stat-label">ماوە</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${personDebts.length}</div>
+                        <div class="stat-label">ژمارەی قەرزەکان</div>
                     </div>
                 </div>
             `;
@@ -2027,13 +2234,18 @@
                 `;
                 
                 activeDebts.forEach(debt => {
+                    const originalAmount = debt.originalAmount || debt.amount;
+                    const paidAmount = debt.paidAmount || 0;
+                    const remainingAmount = originalAmount - paidAmount;
+                    
                     content += `
                         <div style="padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
                             <div style="display: flex; justify-content: space-between;">
-                                <span>${formatCurrency(debt.amount)}</span>
+                                <span><strong>${formatCurrency(remainingAmount)}</strong></span>
                                 <span style="color: #666; font-size: 0.9rem;">${formatDate(debt.date)}</span>
                             </div>
                             <div style="color: #666; font-size: 0.9rem;">${debt.notes || '(بێ تێبینی)'}</div>
+                            ${paidAmount > 0 ? `<div style="color: var(--success-color); font-size: 0.85rem;">پارەدراو: ${formatCurrency(paidAmount)}</div>` : ''}
                         </div>
                     `;
                 });
@@ -2064,12 +2276,19 @@
                 personPhone = person ? person.phone : 'نەناسراو';
             }
             
+            const originalAmount = debt.originalAmount || debt.amount;
+            const paidAmount = debt.paidAmount || 0;
+            const remainingAmount = originalAmount - paidAmount;
+            
             document.getElementById('detail-title').textContent = `قەرزی ${personName}`;
-            document.getElementById('detail-subtitle').textContent = formatCurrency(debt.amount);
+            document.getElementById('detail-subtitle').textContent = formatCurrency(remainingAmount);
             
             const statusText = debt.status === 'active' ? 'چالاک' : 
                              debt.status === 'overdue' ? 'کۆن' : 
                              debt.status === 'paid' ? 'پارەدراو' : 'خێرا';
+            
+            // گەڕان بۆ پارەدانەکانی ئەم قەرزە
+            const debtPayments = payments.filter(payment => payment.debtId === debtId);
             
             let content = `
                 <div class="form-group">
@@ -2082,8 +2301,18 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>بڕی پارە</label>
-                        <div class="form-control" style="background-color: var(--light-color);">${formatCurrency(debt.amount)}</div>
+                        <label>بڕی ڕەسەنی قەرز</label>
+                        <div class="form-control" style="background-color: var(--light-color);">${formatCurrency(originalAmount)}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>بڕی پارەدراو</label>
+                        <div class="form-control" style="background-color: var(--light-color);">${formatCurrency(paidAmount)}</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>بڕی ماوە</label>
+                        <div class="form-control" style="background-color: var(--light-color); font-weight: bold; color: var(--primary-color);">${formatCurrency(remainingAmount)}</div>
                     </div>
                     <div class="form-group">
                         <label>بەروار</label>
@@ -2102,8 +2331,71 @@
                 </div>
             `;
             
+            if (debtPayments.length > 0) {
+                content += `
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>مێژووی پارەدانەکان</label>
+                        <div style="background-color: var(--light-color); border-radius: var(--border-radius); padding: 15px; max-height: 200px; overflow-y: auto;">
+                `;
+                
+                debtPayments.forEach(payment => {
+                    content += `
+                        <div style="padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span><strong>${formatCurrency(payment.amount)}</strong></span>
+                                <span style="color: #666; font-size: 0.9rem;">${formatDate(payment.date)}</span>
+                            </div>
+                            <div style="color: #666; font-size: 0.9rem;">${payment.notes || '(بێ تێبینی)'}</div>
+                        </div>
+                    `;
+                });
+                
+                content += `</div></div>`;
+            }
+            
             document.getElementById('detail-content').innerHTML = content;
             document.getElementById('detail-view').classList.add('active');
+        }
+
+        // نیشاندانی پەنجەرەی پارەدان
+        function showPaymentView(debtId) {
+            const debt = debts.find(d => d.id === debtId);
+            if (!debt) return;
+            
+            currentDebtId = debtId;
+            
+            let personName;
+            if (debt.status === 'quick') {
+                personName = debt.personName || 'نەناسراو';
+            } else {
+                const person = people.find(p => p.id === debt.personId);
+                personName = person ? person.name : 'نەناسراو';
+            }
+            
+            const originalAmount = debt.originalAmount || debt.amount;
+            const paidAmount = debt.paidAmount || 0;
+            const remainingAmount = originalAmount - paidAmount;
+            
+            document.getElementById('payment-title').textContent = `پارەدان بۆ ${personName}`;
+            document.getElementById('payment-subtitle').textContent = formatCurrency(remainingAmount);
+            
+            let paymentContent = `
+                <div class="form-group">
+                    <label>کەس</label>
+                    <div class="form-control" style="background-color: var(--light-color); margin-bottom: 15px;">${personName}</div>
+                </div>
+                <div class="remaining-amount">
+                    بڕی ماوە: ${formatCurrency(remainingAmount)}
+                </div>
+            `;
+            
+            document.getElementById('payment-content').innerHTML = paymentContent;
+            
+            // دانانی بڕی کەمترین پارەدان
+            document.getElementById('payment-amount').max = remainingAmount;
+            document.getElementById('payment-amount').placeholder = `کەمتر لە ${remainingAmount.toLocaleString('en-US')}`;
+            
+            document.getElementById('payment-view').classList.add('active');
         }
 
         // دەستکاری کەس
@@ -2135,12 +2427,21 @@
             const debt = debts.find(d => d.id === debtId);
             if (!debt) return;
             
-            const newAmount = prompt('بڕی پارەی نوێ:', debt.amount);
+            const newAmount = prompt('بڕی پارەی نوێ (ڕەسەنی):', debt.originalAmount || debt.amount);
             if (newAmount === null) return;
             
             const newNotes = prompt('تێبینی نوێ:', debt.notes || '');
             
-            debt.amount = parseInt(newAmount);
+            const newAmountNum = parseInt(newAmount);
+            const paidAmount = debt.paidAmount || 0;
+            
+            if (newAmountNum < paidAmount) {
+                showNotification('بڕی ڕەسەنی قەرز نابێت کەمتر بێت لە بڕی پارەدراو!', 'error');
+                return;
+            }
+            
+            debt.originalAmount = newAmountNum;
+            debt.amount = newAmountNum - paidAmount;
             debt.notes = newNotes;
             
             saveData();
@@ -2150,26 +2451,17 @@
             showNotification('قەرز نوێکرایەوە!');
         }
 
-        // نیشاندانی وەک پارەدراو
-        function markDebtAsPaid(debtId) {
-            const debt = debts.find(d => d.id === debtId);
-            if (!debt) return;
-            
-            if (confirm('ئەم قەرزە وەک پارەدراو نیشان بدەیت؟')) {
-                debt.status = 'paid';
-                saveData();
-                loadDebts();
-                document.getElementById('detail-view').classList.remove('active');
-                
-                showNotification('قەرز وەک پارەدراو نیشاندرا!');
-            }
-        }
-
         // سڕینەوەی کەس
         function deletePerson(personId) {
             if (!confirm('دڵنیای لە سڕینەوەی ئەم کەسە و هەموو قەرزەکانی؟')) {
                 return;
             }
+            
+            // سڕینەوەی هەموو پارەدانەکان بۆ قەرزەکانی ئەم کەسە
+            const personDebts = debts.filter(debt => debt.personId === personId);
+            personDebts.forEach(debt => {
+                payments = payments.filter(payment => payment.debtId !== debt.id);
+            });
             
             people = people.filter(p => p.id !== personId);
             debts = debts.filter(d => d.personId !== personId);
@@ -2184,17 +2476,20 @@
 
         // سڕینەوەی قەرز
         function deleteDebt(debtId) {
-            if (!confirm('دڵنیای لە سڕینەوەی ئەم قەرزە؟')) {
+            if (!confirm('دڵنیای لە سڕینەوەی ئەم قەرزە و هەموو پارەدانەکانی؟')) {
                 return;
             }
             
+            // سڕینەوەی هەموو پارەدانەکان بۆ ئەم قەرزە
+            payments = payments.filter(payment => payment.debtId !== debtId);
             debts = debts.filter(d => d.id !== debtId);
+            
             saveData();
             
             document.getElementById('detail-view').classList.remove('active');
             loadDebts();
             
-            showNotification('قەرز سڕایەوە!');
+            showNotification('قەرز و پارەدانەکانی سڕانەوە!');
         }
 
         // داخستنی زیادکردنی کەس
@@ -2205,6 +2500,11 @@
         // داخستنی زیادکردنی قەرز
         function hideAddDebtView() {
             document.getElementById('add-debt-view').classList.remove('active');
+        }
+
+        // داخستنی پارەدان
+        function hidePaymentView() {
+            document.getElementById('payment-view').classList.remove('active');
         }
 
         // ڕێکخستنی ڕاپۆرت
@@ -2231,6 +2531,7 @@
                 const data = {
                     people: people,
                     debts: debts,
+                    payments: payments,
                     settings: settings,
                     exportedAt: new Date().toISOString()
                 };
@@ -2266,6 +2567,7 @@
                                 if (confirm('ئەمە هەموو زانیارییەکانی ئێستا لەبەر دەگرێت. بەردەوامبیت؟')) {
                                     people = data.people;
                                     debts = data.debts;
+                                    payments = data.payments || [];
                                     if (data.settings) settings = data.settings;
                                     saveData();
                                     
@@ -2294,6 +2596,7 @@
                 const backup = {
                     people: people,
                     debts: debts,
+                    payments: payments,
                     settings: settings,
                     backedUpAt: new Date().toISOString()
                 };
@@ -2310,6 +2613,7 @@
                     localStorage.clear();
                     people = [];
                     debts = [];
+                    payments = [];
                     settings = {
                         autoDate: true,
                         monthlyAlert: true,
@@ -2338,21 +2642,28 @@
                               "تەمموز", "ئاب", "ئەیلول", "تشرینی یەکەم", "تشرینی دووەم", "کانوونی یەکەم"];
             document.getElementById('report-month').textContent = `${monthNames[currentMonth-1]} ${currentYear}`;
             
+            // گەڕان بۆ قەرزەکانی ئەم مانگە
             const monthDebts = debts.filter(debt => {
                 const debtDate = new Date(debt.date);
                 return debtDate.getMonth() + 1 === currentMonth && debtDate.getFullYear() === currentYear;
             });
             
-            const totalDebts = monthDebts.reduce((sum, debt) => sum + debt.amount, 0);
-            const paidDebts = monthDebts.filter(debt => debt.status === 'paid').reduce((sum, debt) => sum + debt.amount, 0);
-            const unpaidDebts = monthDebts.filter(debt => debt.status === 'active' || debt.status === 'quick').reduce((sum, debt) => sum + debt.amount, 0);
+            // گەڕان بۆ پارەدانەکانی ئەم مانگە
+            const monthPayments = payments.filter(payment => {
+                const paymentDate = new Date(payment.date);
+                return paymentDate.getMonth() + 1 === currentMonth && paymentDate.getFullYear() === currentYear;
+            });
             
-            document.getElementById('total-debts').textContent = formatCurrency(totalDebts);
+            const totalOriginal = monthDebts.reduce((sum, debt) => sum + (debt.originalAmount || debt.amount || 0), 0);
+            const totalPaid = monthPayments.reduce((sum, payment) => sum + payment.amount, 0);
+            const totalRemaining = totalOriginal - totalPaid;
+            
+            document.getElementById('total-debts').textContent = formatCurrency(totalOriginal);
             document.getElementById('total-people').textContent = people.length;
-            document.getElementById('paid-debts').textContent = formatCurrency(paidDebts);
-            document.getElementById('unpaid-debts').textContent = formatCurrency(unpaidDebts);
+            document.getElementById('paid-debts').textContent = formatCurrency(totalPaid);
+            document.getElementById('unpaid-debts').textContent = formatCurrency(totalRemaining);
             
-            const collectionRate = totalDebts > 0 ? Math.round((paidDebts / totalDebts) * 100) : 0;
+            const collectionRate = totalOriginal > 0 ? Math.round((totalPaid / totalOriginal) * 100) : 0;
             document.getElementById('collection-rate').textContent = collectionRate + '%';
             document.getElementById('collection-progress').style.width = collectionRate + '%';
             
@@ -2385,14 +2696,14 @@
                     debtByPerson[personName] = 0;
                 }
                 
-                debtByPerson[personName] += debt.amount;
+                debtByPerson[personName] += (debt.originalAmount || debt.amount || 0);
             });
             
             let distributionHTML = '<div style="padding: 15px;">';
             
             Object.keys(debtByPerson).forEach(personName => {
                 const amount = debtByPerson[personName];
-                const percentage = Math.round((amount / totalDebts) * 100);
+                const percentage = Math.round((amount / totalOriginal) * 100);
                 
                 distributionHTML += `
                     <div style="margin-bottom: 15px;">
@@ -2524,7 +2835,7 @@
             document.getElementById('sys-total-people').textContent = people.length;
             document.getElementById('sys-total-debts').textContent = debts.length;
             
-            const dataSize = JSON.stringify(people).length + JSON.stringify(debts).length + JSON.stringify(settings).length;
+            const dataSize = JSON.stringify(people).length + JSON.stringify(debts).length + JSON.stringify(payments).length + JSON.stringify(settings).length;
             document.getElementById('sys-data-size').textContent = Math.round(dataSize / 1024) + ' KB';
             
             const lastBackup = localStorage.getItem('lastBackup');
