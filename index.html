@@ -1,0 +1,2548 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>سیستەمی بەڕێوەبردنی قەرز</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --background-color: #f5f7fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --border-radius: 16px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --box-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* ڕەنگە جیاوازەکان */
+        .theme-blue {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+        }
+
+        .theme-green {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+        }
+
+        .theme-purple {
+            --primary-color: #9b59b6;
+            --secondary-color: #8e44ad;
+        }
+
+        .theme-red {
+            --primary-color: #e74c3c;
+            --secondary-color: #c0392b;
+        }
+
+        .theme-dark {
+            --primary-color: #34495e;
+            --secondary-color: #2c3e50;
+            --background-color: #1a1a1a;
+            --card-color: #2d2d2d;
+            --text-color: #f0f0f0;
+            --light-color: #3d3d3d;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-bottom: 90px;
+            font-size: 15px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* زۆر بچووک (تەلەفۆنە بچووکەکان) */
+        @media (max-width: 360px) {
+            body {
+                font-size: 14px;
+            }
+            
+            .header h1 {
+                font-size: 1.4rem !important;
+            }
+            
+            .tab {
+                padding: 12px 10px !important;
+                font-size: 0.85rem !important;
+            }
+            
+            .card {
+                padding: 15px !important;
+            }
+            
+            .btn {
+                padding: 10px 15px !important;
+                font-size: 0.9rem !important;
+            }
+        }
+
+        /* مۆبایلە مامناوەندەکان */
+        @media (max-width: 480px) {
+            .header {
+                padding: 18px 15px !important;
+            }
+            
+            .card-title {
+                font-size: 1.1rem !important;
+            }
+            
+            .form-control {
+                padding: 10px 12px !important;
+            }
+            
+            .bottom-nav {
+                padding: 10px 0 !important;
+            }
+            
+            .nav-item i {
+                font-size: 1.1rem !important;
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0 15px;
+        }
+
+        /* هێدەر */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 22px 15px;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.3s ease;
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        /* تابەکان */
+        .tabs {
+            display: flex;
+            background-color: var(--card-color);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+            position: sticky;
+            top: 86px;
+            z-index: 99;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            padding: 16px 18px;
+            white-space: nowrap;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab i {
+            margin-left: 8px;
+            font-size: 1.1rem;
+        }
+
+        /* پەیجەکان */
+        .page {
+            display: none;
+            padding: 20px 15px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* کارتەکان */
+        .card {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* دوگمەکان */
+        .btn {
+            padding: 13px 22px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            gap: 8px;
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: #333;
+        }
+
+        .btn-info {
+            background-color: var(--info-color);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 9px 16px;
+            font-size: 0.9rem;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* لیستەکان */
+        .person-list, .debt-list, .quick-debt-list {
+            max-height: 450px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .person-item, .debt-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: var(--transition);
+            border-radius: 12px;
+            margin-bottom: 6px;
+        }
+
+        .person-item:last-child, .debt-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .person-item:hover, .debt-item:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .person-item.active, .debt-item.active {
+            background-color: rgba(74, 111, 165, 0.08);
+            border-right: 4px solid var(--primary-color);
+        }
+
+        .person-info h3, .debt-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .person-info p, .debt-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .debt-amount {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .debt-overdue {
+            color: var(--danger-color);
+        }
+
+        /* فۆرمەکان */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: var(--card-color);
+            color: var(--text-color);
+            text-align: right;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* وردەکاری */
+        .detail-view {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: var(--card-color);
+            z-index: 1000;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .detail-view.active {
+            transform: translateX(0);
+        }
+
+        .detail-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .detail-content {
+            padding: 22px;
+        }
+
+        .close-detail {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .close-detail:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        /* بۆتۆم نێڤ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 14px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: var(--transition);
+            flex: 1;
+            padding: 5px 0;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item i {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        /* ڕاپۆرت */
+        .report-card {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .month-selector {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .month-nav {
+            background-color: rgba(0, 0, 0, 0.05);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .month-nav:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .month-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .stat-item {
+            background-color: var(--light-color);
+            padding: 18px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* باری خالی */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 18px;
+            opacity: 0.4;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        /* ڕێکخستنەکان */
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-color);
+        }
+
+        .setting-desc {
+            font-size: 0.85rem;
+            color: #777;
+            max-width: 80%;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: var(--transition);
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* تێمەکان (ڕەنگەکان) */
+        .theme-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .theme-option {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            font-weight: 500;
+        }
+
+        .theme-option.active {
+            border-color: var(--primary-color);
+            transform: scale(1.02);
+        }
+
+        .theme-option.blue {
+            background-color: #4a6fa5;
+            color: white;
+        }
+
+        .theme-option.green {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .theme-option.purple {
+            background-color: #9b59b6;
+            color: white;
+        }
+
+        .theme-option.red {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .theme-option.dark {
+            background-color: #34495e;
+            color: white;
+        }
+
+        /* بەدیلەکان */
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background-color: rgba(74, 111, 165, 0.1);
+            color: var(--primary-color);
+        }
+
+        .badge-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+
+        .badge-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        /* وەرگرتنی تایبەتمەندییەکانی سیستەم */
+        .system-info {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        /* لۆدینگ */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(74, 111, 165, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* نۆتیفیکەیشن */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background-color: var(--success-color);
+            color: white;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 1001;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* هێڵی پێشکەوتن */
+        .progress-bar {
+            height: 6px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        /* جیاوازی بەرەنگاری بچووکترین ئەکرینەکان */
+        @media (max-width: 320px) {
+            .header {
+                padding: 15px 12px !important;
+            }
+            
+            .header h1 {
+                font-size: 1.3rem !important;
+            }
+            
+            .tabs {
+                top: 76px;
+            }
+            
+            .tab {
+                padding: 12px 8px !important;
+                font-size: 0.8rem !important;
+            }
+            
+            .page {
+                padding: 15px 12px !important;
+            }
+            
+            .card {
+                padding: 12px !important;
+                margin-bottom: 12px !important;
+            }
+            
+            .btn {
+                padding: 10px 12px !important;
+                font-size: 0.85rem !important;
+            }
+            
+            .bottom-nav {
+                padding: 8px 0 !important;
+            }
+            
+            .nav-item i {
+                font-size: 1rem !important;
+            }
+            
+            .nav-item span {
+                font-size: 0.7rem !important;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .theme-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* پشتگیری هەموو فڕەیمەکان */
+        @supports (padding: max(0px)) {
+            .page {
+                padding-left: max(15px, env(safe-area-inset-left));
+                padding-right: max(15px, env(safe-area-inset-right));
+            }
+            
+            .bottom-nav {
+                padding-bottom: max(14px, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body class="theme-blue">
+    <!-- نۆتیفیکەیشن -->
+    <div class="notification" id="notification">
+        کردارەکە بە سەرکەوتوویی جێبەجێ کرا!
+    </div>
+
+    <!-- هێدەر -->
+    <div class="header">
+        <h1>سیستەمی بەڕێوەبردنی قەرز</h1>
+        <p>بەڕێوەبردنی ئاسان و خێرای قەرزەکان</p>
+    </div>
+
+    <!-- تابەکان -->
+    <div class="tabs">
+        <div class="tab active" data-page="home">
+            <i class="fas fa-home"></i>
+            سەرەکی
+        </div>
+        <div class="tab" data-page="quick-debt">
+            <i class="fas fa-bolt"></i>
+            قەرزی خێرا
+        </div>
+        <div class="tab" data-page="report">
+            <i class="fas fa-chart-bar"></i>
+            ڕاپۆرت
+        </div>
+        <div class="tab" data-page="settings">
+            <i class="fas fa-cog"></i>
+            ڕێکخستنەکان
+        </div>
+    </div>
+
+    <!-- پەیجی ماڵەوە -->
+    <div id="home" class="page active">
+        <!-- لیستی کەسەکان -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-users"></i>
+                    لیستی کەسەکان
+                </div>
+                <button class="btn btn-primary btn-sm" id="add-person">
+                    <i class="fas fa-plus"></i>
+                    زیادکردنی کەس
+                </button>
+            </div>
+            <div class="person-list" id="person-list">
+                <!-- لیستی کەسەکان لێرە دێت -->
+            </div>
+        </div>
+
+        <!-- لیستی قەرزەکانی ئەم مانگە -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    قەرزەکانی ئەم مانگە
+                </div>
+                <div class="badge" id="current-month"></div>
+            </div>
+            <div class="debt-list" id="current-debts">
+                <!-- قەرزەکانی ئەم مانگە لێرە دێت -->
+            </div>
+        </div>
+
+        <!-- قەرزە کۆنەکان -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-history"></i>
+                    قەرزە کۆنەکان
+                </div>
+                <div class="badge badge-danger" id="old-debts-count">0</div>
+            </div>
+            <div class="debt-list" id="old-debts">
+                <!-- قەرزە کۆنەکان لێرە دێت -->
+            </div>
+        </div>
+    </div>
+
+    <!-- پەیجی قەرزی خێرا -->
+    <div id="quick-debt" class="page">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-bolt"></i>
+                    قەرزی خێرا
+                </div>
+                <div class="badge">بۆ کەسانی نوێ</div>
+            </div>
+            <div class="card-body">
+                <form id="quick-debt-form">
+                    <div class="form-group">
+                        <label for="quick-name">ناوی کەس</label>
+                        <input type="text" id="quick-name" class="form-control" required placeholder="ناوی تەواو بنووسە">
+                    </div>
+                    <div class="form-group">
+                        <label for="quick-phone">ژمارەی مۆبایل</label>
+                        <input type="tel" id="quick-phone" class="form-control" required placeholder="ژمارەی مۆبایل بنووسە">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quick-amount">بڕی پارە</label>
+                            <input type="number" id="quick-amount" class="form-control" min="1" required placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="quick-date">بەروار</label>
+                            <input type="date" id="quick-date" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="quick-notes">تێبینی (ئارەزوومەندانە)</label>
+                        <textarea id="quick-notes" class="form-control" rows="2" placeholder="تێبینیێک بۆ ئەم قەرزە زیاد بکە"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block">
+                        <i class="fas fa-save"></i>
+                        پاشەکەوتی قەرز
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-list"></i>
+                    لیستی قەرزی خێرا
+                </div>
+                <button class="btn btn-info btn-sm" id="refresh-quick-list">
+                    <i class="fas fa-sync-alt"></i>
+                    نوێکردنەوە
+                </button>
+            </div>
+            <div class="quick-debt-list" id="quick-debt-list">
+                <!-- لیستی قەرزی خێرا لێرە دێت -->
+            </div>
+        </div>
+    </div>
+
+    <!-- پەیجی ڕاپۆرت -->
+    <div id="report" class="page">
+        <div class="month-selector">
+            <button class="month-nav" id="prev-month">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            <div class="month-title" id="report-month">مانگی ٥ - ٢٠٢٣</div>
+            <button class="month-nav" id="next-month">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="total-debts">0 دینار</div>
+                <div class="stat-label">کۆی گشتی قەرزەکان</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="total-people">0</div>
+                <div class="stat-label">ژمارەی کەسەکان</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="paid-debts">0 دینار</div>
+                <div class="stat-label">قەرزە وەدەگیراوەکان</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="unpaid-debts">0 دینار</div>
+                <div class="stat-label">قەرزە وەنانەدراوەکان</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-chart-pie"></i>
+                    دابەشبوونی قەرزەکان
+                </div>
+            </div>
+            <div id="debt-distribution">
+                <!-- دابەشبوونی قەرزەکان لێرە دێت -->
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    پێشکەوتنی مانگانە
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="info-item">
+                    <div class="info-label">ڕێژەی وەرگرتن</div>
+                    <div class="info-value" id="collection-rate">0%</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="collection-progress" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- پەیجی ڕێکخستنەکان -->
+    <div id="settings" class="page">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-palette"></i>
+                    تێم و ڕووکار
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>تێمەکە هەڵبژێرە</label>
+                    <div class="theme-options">
+                        <div class="theme-option blue active" data-theme="blue">شین</div>
+                        <div class="theme-option green" data-theme="green">سەوز</div>
+                        <div class="theme-option purple" data-theme="purple">مۆر</div>
+                        <div class="theme-option red" data-theme="red">سور</div>
+                        <div class="theme-option dark" data-theme="dark">تاریک</div>
+                    </div>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="setting-title">دۆخی تاریک</div>
+                        <div class="setting-desc">گواستنەوە لە نێوان دۆخی ڕووناک و تاریک</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="dark-mode">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="setting-title">فۆنتە گەورەکان</div>
+                        <div class="setting-desc">زیادکردنی قەبارەی فۆنت بۆ خوێندنەوەی باشتر</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="large-fonts">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-sliders-h"></i>
+                    ڕێکخستنە گشتیەکان
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="settings-item">
+                    <div>
+                        <div class="setting-title">بەرواری خۆکار</div>
+                        <div class="setting-desc">بەروار و کات بەشێوەی خۆکار زیاد دەبێت</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="auto-date" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="settings-item">
+                    <div>
+                        <div class="setting-title">ئاگاداریەکانی مانگانە</div>
+                        <div class="setting-desc">ئاگاداری بۆ قەرزە وەنانەدراوەکان</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="monthly-alert" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="settings-item">
+                    <div>
+                        <div class="setting-title">قەرزە کۆنەکانی خۆکار</div>
+                        <div class="setting-desc">قەرزە کۆنەکان بەشێوەی خۆکار دەگوازرێنەوە</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="auto-old-debts" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="settings-item">
+                    <div>
+                        <div class="setting-title">فیدباکی لەرزین</div>
+                        <div class="setting-desc">لەرزین لە کردارەکاندا</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="vibration" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="settings-item">
+                    <div>
+                        <div class="setting-title">ئاگاداریە دەنگیەکان</div>
+                        <div class="setting-desc">دەنگ لە کاتی ئاگاداریەکاندا</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="sound-notifications">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-database"></i>
+                    بەڕێوەبردنی زانیارییەکان
+                </div>
+            </div>
+            <div class="card-body">
+                <button class="btn btn-primary btn-block" style="margin-bottom: 12px;" id="export-data">
+                    <i class="fas fa-download"></i>
+                    هەناردەی زانیارییەکان
+                </button>
+                <button class="btn btn-warning btn-block" style="margin-bottom: 12px;" id="import-data">
+                    <i class="fas fa-upload"></i>
+                    هێنانی زانیارییەکان
+                </button>
+                <button class="btn btn-info btn-block" style="margin-bottom: 12px;" id="backup-data">
+                    <i class="fas fa-copy"></i>
+                    دروستکردنی پاشەکەوت
+                </button>
+                <button class="btn btn-danger btn-block" id="reset-data">
+                    <i class="fas fa-trash"></i>
+                    سڕینەوەی هەموو زانیارییەکان
+                </button>
+            </div>
+        </div>
+        
+        <div class="card system-info">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-info-circle"></i>
+                    زانیاری سیستەم
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="info-item">
+                    <div class="info-label">وەشانی ئەپ</div>
+                    <div class="info-value">1.2.0</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">کۆی گشتی کەسەکان</div>
+                    <div class="info-value" id="sys-total-people">0</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">کۆی گشتی قەرزەکان</div>
+                    <div class="info-value" id="sys-total-debts">0</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">قەبارەی زانیارییەکان</div>
+                    <div class="info-value" id="sys-data-size">0 KB</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">دوایین پاشەکەوت</div>
+                    <div class="info-value" id="sys-last-backup">هەرگیز</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- وردەکاری بینین -->
+    <div class="detail-view" id="detail-view">
+        <div class="detail-header">
+            <div>
+                <h3 id="detail-title">وردەکاری قەرز</h3>
+                <p id="detail-subtitle"></p>
+            </div>
+            <button class="close-detail">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="detail-content">
+            <div id="detail-content">
+                <!-- وردەکاری لێرە دێت -->
+            </div>
+            <div class="action-buttons" style="margin-top: 30px; display: flex; gap: 10px;">
+                <button class="btn btn-warning" id="edit-detail" style="flex: 1;">
+                    <i class="fas fa-edit"></i>
+                    دەستکاری
+                </button>
+                <button class="btn btn-danger" id="delete-detail" style="flex: 1;">
+                    <i class="fas fa-trash"></i>
+                    سڕینەوە
+                </button>
+                <button class="btn btn-info" id="mark-paid" style="flex: 1;">
+                    <i class="fas fa-check"></i>
+                    نیشانەکردنی پارەدراو
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- زیادکردنی کەس -->
+    <div class="detail-view" id="add-person-view">
+        <div class="detail-header">
+            <div>
+                <h3>زیادکردنی کەس</h3>
+                <p>کەسێکی نوێ زیاد بکە بۆ سیستەمەکە</p>
+            </div>
+            <button class="close-detail" id="close-add-person">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="detail-content">
+            <form id="add-person-form">
+                <div class="form-group">
+                    <label for="person-name">ناوی تەواو</label>
+                    <input type="text" id="person-name" class="form-control" required placeholder="ناوی تەواو بنووسە">
+                </div>
+                <div class="form-group">
+                    <label for="person-phone">ژمارەی مۆبایل</label>
+                    <input type="tel" id="person-phone" class="form-control" required placeholder="ژمارەی مۆبایل بنووسە">
+                </div>
+                <div class="form-group">
+                    <label for="person-notes">تێبینی (ئارەزوومەندانە)</label>
+                    <textarea id="person-notes" class="form-control" rows="3" placeholder="تێبینیێک بۆ ئەم کەسە زیاد بکە"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success btn-block">
+                    <i class="fas fa-save"></i>
+                    زیادکردنی کەس
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- زیادکردنی قەرز -->
+    <div class="detail-view" id="add-debt-view">
+        <div class="detail-header">
+            <div>
+                <h3 id="add-debt-title">زیادکردنی قەرز</h3>
+                <p id="add-debt-subtitle"></p>
+            </div>
+            <button class="close-detail" id="close-add-debt">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="detail-content">
+            <form id="add-debt-form">
+                <div class="form-group">
+                    <label for="debt-person">کەس</label>
+                    <select id="debt-person" class="form-control" required>
+                        <!-- کەسەکان لێرە دێت -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="debt-amount">بڕی پارە (دینار)</label>
+                    <input type="number" id="debt-amount" class="form-control" min="1" required placeholder="بڕی پارە بنووسە">
+                </div>
+                <div class="form-group">
+                    <label for="debt-date">بەروار</label>
+                    <input type="date" id="debt-date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="debt-notes">تێبینی (ئارەزوومەندانە)</label>
+                    <textarea id="debt-notes" class="form-control" rows="3" placeholder="تێبینیێک بۆ ئەم قەرزە زیاد بکە"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success btn-block">
+                    <i class="fas fa-save"></i>
+                    زیادکردنی قەرز
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- بۆتۆم نێڤ -->
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active" data-page="home">
+            <i class="fas fa-home"></i>
+            سەرەکی
+        </a>
+        <a href="#" class="nav-item" data-page="quick-debt">
+            <i class="fas fa-bolt"></i>
+            خێرا
+        </a>
+        <a href="#" class="nav-item" data-page="report">
+            <i class="fas fa-chart-bar"></i>
+            ڕاپۆرت
+        </a>
+        <a href="#" class="nav-item" data-page="settings">
+            <i class="fas fa-cog"></i>
+            ڕێکخستن
+        </a>
+    </div>
+
+    <script>
+        // زانیاریەکان
+        let people = [];
+        let debts = [];
+        let currentPersonId = null;
+        let currentDebtId = null;
+        let currentMonth = new Date().getMonth() + 1;
+        let currentYear = new Date().getFullYear();
+        let settings = {
+            autoDate: true,
+            monthlyAlert: true,
+            autoOldDebts: true,
+            vibration: true,
+            soundNotifications: false,
+            theme: 'blue',
+            darkMode: false,
+            largeFonts: false
+        };
+
+        // دەستپێکردنی ئەپ
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+            loadData();
+            displayCurrentMonth();
+            loadPeopleList();
+            loadDebts();
+            loadReport();
+            setupTabs();
+            setupForms();
+            setupDetailView();
+            setupReport();
+            setupBottomNav();
+            loadSettings();
+            updateSystemInfo();
+        });
+
+        // دەستپێکردنی ئەپ
+        function initApp() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('quick-date').value = today;
+            document.getElementById('debt-date').value = today;
+            
+            if (people.length === 0) {
+                createSampleData();
+            }
+            
+            // چێککردن بۆ قەرزە کۆنەکان
+            checkForOverdueDebts();
+        }
+
+        // بارکردنی زانیاریەکان
+        function loadData() {
+            const savedPeople = localStorage.getItem('debtPeople');
+            const savedDebts = localStorage.getItem('debtDebts');
+            const savedSettings = localStorage.getItem('debtSettings');
+            
+            if (savedPeople) {
+                people = JSON.parse(savedPeople);
+            }
+            
+            if (savedDebts) {
+                debts = JSON.parse(savedDebts);
+            }
+            
+            if (savedSettings) {
+                settings = JSON.parse(savedSettings);
+                applySettings();
+            }
+        }
+
+        // پاشەکەوتکردنی زانیاریەکان
+        function saveData() {
+            localStorage.setItem('debtPeople', JSON.stringify(people));
+            localStorage.setItem('debtDebts', JSON.stringify(debts));
+            localStorage.setItem('debtSettings', JSON.stringify(settings));
+            updateSystemInfo();
+        }
+
+        // بارکردنی ڕێکخستنەکان
+        function loadSettings() {
+            // تێمەکان
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const theme = this.dataset.theme;
+                    settings.theme = theme;
+                    applyTheme(theme);
+                    saveData();
+                    showNotification('تێمەکە گۆڕدرا بۆ ' + theme);
+                });
+            });
+            
+            // سویچەکان
+            document.getElementById('auto-date').checked = settings.autoDate;
+            document.getElementById('monthly-alert').checked = settings.monthlyAlert;
+            document.getElementById('auto-old-debts').checked = settings.autoOldDebts;
+            document.getElementById('vibration').checked = settings.vibration;
+            document.getElementById('sound-notifications').checked = settings.soundNotifications;
+            document.getElementById('dark-mode').checked = settings.darkMode;
+            document.getElementById('large-fonts').checked = settings.largeFonts;
+            
+            // سویچەکان ئێڤێنتەکان
+            document.getElementById('auto-date').addEventListener('change', function() {
+                settings.autoDate = this.checked;
+                saveData();
+            });
+            
+            document.getElementById('monthly-alert').addEventListener('change', function() {
+                settings.monthlyAlert = this.checked;
+                saveData();
+            });
+            
+            document.getElementById('auto-old-debts').addEventListener('change', function() {
+                settings.autoOldDebts = this.checked;
+                saveData();
+            });
+            
+            document.getElementById('vibration').addEventListener('change', function() {
+                settings.vibration = this.checked;
+                saveData();
+                if (this.checked && 'vibrate' in navigator) {
+                    navigator.vibrate(50);
+                }
+            });
+            
+            document.getElementById('sound-notifications').addEventListener('change', function() {
+                settings.soundNotifications = this.checked;
+                saveData();
+            });
+            
+            document.getElementById('dark-mode').addEventListener('change', function() {
+                settings.darkMode = this.checked;
+                if (this.checked) {
+                    document.body.classList.add('theme-dark');
+                } else {
+                    document.body.classList.remove('theme-dark');
+                }
+                saveData();
+            });
+            
+            document.getElementById('large-fonts').addEventListener('change', function() {
+                settings.largeFonts = this.checked;
+                if (this.checked) {
+                    document.body.style.fontSize = '16px';
+                } else {
+                    document.body.style.fontSize = '15px';
+                }
+                saveData();
+            });
+            
+            // تازەکردنەوەی لیستی خێرا
+            document.getElementById('refresh-quick-list').addEventListener('click', function() {
+                loadQuickDebtList();
+                showNotification('لیستی قەرزی خێرا نوێکرایەوە');
+            });
+        }
+
+        // جێبەجێکردنی ڕێکخستنەکان
+        function applySettings() {
+            applyTheme(settings.theme);
+            
+            if (settings.darkMode) {
+                document.body.classList.add('theme-dark');
+            }
+            
+            if (settings.largeFonts) {
+                document.body.style.fontSize = '16px';
+            }
+            
+            // چالاککردنی تێمەکان
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.dataset.theme === settings.theme) {
+                    option.classList.add('active');
+                }
+            });
+        }
+
+        // جێبەجێکردنی تێم
+        function applyTheme(theme) {
+            document.body.className = '';
+            document.body.classList.add('theme-' + theme);
+        }
+
+        // دروستکردنی داتای نموونەیی
+        function createSampleData() {
+            people = [
+                { id: 1, name: "عەلی محەممەد", phone: "07501234567", notes: "هاوکاری ماڵ", createdAt: new Date().toISOString() },
+                { id: 2, name: "سارە عەبدوڵڵا", phone: "07701234567", notes: "هاوکاری کار", createdAt: new Date().toISOString() },
+                { id: 3, name: "حوسێن ڕەسوڵ", phone: "07511234567", notes: "هاوکاری خزم", createdAt: new Date().toISOString() },
+                { id: 4, name: "نینا عەزیز", phone: "07711234567", notes: "هاوکاری فێرگە", createdAt: new Date().toISOString() }
+            ];
+            
+            const now = new Date();
+            const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+            const twoMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, now.getDate());
+            
+            debts = [
+                { id: 1, personId: 1, amount: 150000, date: now.toISOString(), notes: "بۆ نان", status: "active", createdAt: now.toISOString() },
+                { id: 2, personId: 2, amount: 75000, date: now.toISOString(), notes: "بۆ سووتەمەنی", status: "active", createdAt: now.toISOString() },
+                { id: 3, personId: 3, amount: 200000, date: lastMonth.toISOString(), notes: "قەرزی کۆن", status: "overdue", createdAt: lastMonth.toISOString() },
+                { id: 4, personId: 4, amount: 50000, date: twoMonthsAgo.toISOString(), notes: "بۆ کتێب", status: "overdue", createdAt: twoMonthsAgo.toISOString() },
+                { id: 5, personId: 1, amount: 100000, date: now.toISOString(), notes: "قەرزی زیادە", status: "active", createdAt: now.toISOString() }
+            ];
+            
+            saveData();
+        }
+
+        // نیشاندانی مانگی ئێستا
+        function displayCurrentMonth() {
+            const monthNames = ["کانوونی دووەم", "شوبات", "ئازار", "نیسان", "ئایار", "حوزەیران", 
+                              "تەمموز", "ئاب", "ئەیلول", "تشرینی یەکەم", "تشرینی دووەم", "کانوونی یەکەم"];
+            document.getElementById('current-month').textContent = `${monthNames[currentMonth-1]} ${currentYear}`;
+        }
+
+        // بارکردنی لیستی کەسەکان
+        function loadPeopleList() {
+            const personList = document.getElementById('person-list');
+            personList.innerHTML = '';
+            
+            if (people.length === 0) {
+                personList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h3>هیچ کەسێک نیە</h3>
+                        <p>یەکەم کەس زیاد بکە بۆ دەستپێکردن</p>
+                        <button class="btn btn-primary" id="add-first-person" style="margin-top: 15px;">
+                            <i class="fas fa-plus"></i>
+                            یەکەم کەس زیاد بکە
+                        </button>
+                    </div>
+                `;
+                
+                document.getElementById('add-first-person').addEventListener('click', function() {
+                    showAddPersonView();
+                });
+                return;
+            }
+            
+            people.forEach(person => {
+                const personDebts = debts.filter(debt => debt.personId === person.id && debt.status === 'active');
+                const totalDebt = personDebts.reduce((sum, debt) => sum + debt.amount, 0);
+                
+                const personItem = document.createElement('div');
+                personItem.className = 'person-item';
+                personItem.dataset.id = person.id;
+                personItem.innerHTML = `
+                    <div class="person-info">
+                        <h3>${person.name}</h3>
+                        <p>${person.phone}</p>
+                        <p><small>کۆی قەرز: ${formatCurrency(totalDebt)}</small></p>
+                    </div>
+                    <div>
+                        <i class="fas fa-chevron-left"></i>
+                    </div>
+                `;
+                
+                personItem.addEventListener('click', function() {
+                    showAddDebtView(person.id);
+                });
+                
+                personItem.addEventListener('dblclick', function() {
+                    showPersonDetail(person.id);
+                });
+                
+                personList.appendChild(personItem);
+            });
+        }
+
+        // بارکردنی قەرزەکان
+        function loadDebts() {
+            const now = new Date();
+            const currentMonthDebts = document.getElementById('current-debts');
+            const oldDebts = document.getElementById('old-debts');
+            const oldDebtsCount = document.getElementById('old-debts-count');
+            
+            currentMonthDebts.innerHTML = '';
+            oldDebts.innerHTML = '';
+            
+            const currentMonthItems = [];
+            const oldMonthItems = [];
+            let overdueCount = 0;
+            
+            debts.forEach(debt => {
+                const debtDate = new Date(debt.date);
+                const person = people.find(p => p.id === debt.personId);
+                
+                if (!person && debt.status !== 'quick') return;
+                
+                const debtItem = document.createElement('div');
+                debtItem.className = 'debt-item';
+                debtItem.dataset.id = debt.id;
+                
+                const isOverdue = debt.status === 'overdue';
+                const isQuick = debt.status === 'quick';
+                const debtClass = isOverdue ? 'debt-overdue' : '';
+                const personName = person ? person.name : 'کەسی نەناسراو';
+                
+                debtItem.innerHTML = `
+                    <div class="debt-info">
+                        <h3>${personName} ${isQuick ? '<span class="badge">خێرا</span>' : ''}</h3>
+                        <p>${formatDate(debt.date)} - ${debt.notes || '(بێ تێبینی)'}</p>
+                        ${isOverdue ? '<p class="badge badge-danger">کۆن</p>' : ''}
+                    </div>
+                    <div class="debt-amount ${debtClass}">
+                        ${formatCurrency(debt.amount)}
+                    </div>
+                `;
+                
+                debtItem.addEventListener('dblclick', function() {
+                    showDebtDetail(debt.id);
+                });
+                
+                if (debtDate.getMonth() + 1 === currentMonth && debtDate.getFullYear() === currentYear && (debt.status === 'active' || debt.status === 'quick')) {
+                    currentMonthItems.push(debtItem);
+                } else {
+                    oldMonthItems.push(debtItem);
+                    if (debt.status === 'overdue') overdueCount++;
+                }
+            });
+            
+            oldDebtsCount.textContent = overdueCount;
+            
+            if (currentMonthItems.length === 0) {
+                currentMonthDebts.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <h3>هیچ قەرزێک نیە بۆ ئەم مانگە</h3>
+                        <p>یەکەم قەرز زیاد بکە بۆ دەستپێکردن</p>
+                    </div>
+                `;
+            } else {
+                currentMonthItems.forEach(item => {
+                    currentMonthDebts.appendChild(item);
+                });
+            }
+            
+            if (oldMonthItems.length === 0) {
+                oldDebts.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <h3>هیچ قەرزی کۆن نیە</h3>
+                        <p>هەموو قەرزەکانت نوێن</p>
+                    </div>
+                `;
+            } else {
+                oldMonthItems.forEach(item => {
+                    oldDebts.appendChild(item);
+                });
+            }
+            
+            loadQuickDebtList();
+            updateSystemInfo();
+        }
+
+        // بارکردنی لیستی قەرزی خێرا
+        function loadQuickDebtList() {
+            const quickDebtList = document.getElementById('quick-debt-list');
+            const quickDebts = debts.filter(debt => debt.status === 'quick');
+            
+            quickDebtList.innerHTML = '';
+            
+            if (quickDebts.length === 0) {
+                quickDebtList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bolt"></i>
+                        <h3>هیچ قەرزی خێرا نیە</h3>
+                        <p>قەرزە خێراکان لێرە دەردەکەون</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            quickDebts.forEach(debt => {
+                const debtItem = document.createElement('div');
+                debtItem.className = 'debt-item';
+                debtItem.dataset.id = debt.id;
+                
+                debtItem.innerHTML = `
+                    <div class="debt-info">
+                        <h3>قەرزی خێرا</h3>
+                        <p>${formatDate(debt.date)} - ${debt.notes || '(بێ تێبینی)'}</p>
+                        <p><small>${debt.personName || 'نەناسراو'}</small></p>
+                    </div>
+                    <div class="debt-amount">
+                        ${formatCurrency(debt.amount)}
+                    </div>
+                `;
+                
+                debtItem.addEventListener('dblclick', function() {
+                    showDebtDetail(debt.id);
+                });
+                
+                quickDebtList.appendChild(debtItem);
+            });
+        }
+
+        // فۆرماتی پارە (ژمارەکان بە ئینگلیزی)
+        function formatCurrency(amount) {
+            return amount.toLocaleString('en-US') + ' دینار';
+        }
+
+        // فۆرماتی بەروار (ژمارەکان بە ئینگلیزی)
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            return `${year}/${month}/${day}`;
+        }
+
+        // ڕێکخستنی تابەکان
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const pages = document.querySelectorAll('.page');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const pageId = this.dataset.page;
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    pages.forEach(page => {
+                        page.classList.remove('active');
+                        if (page.id === pageId) {
+                            page.classList.add('active');
+                        }
+                    });
+                    
+                    document.querySelectorAll('.nav-item').forEach(navItem => {
+                        navItem.classList.remove('active');
+                        if (navItem.dataset.page === pageId) {
+                            navItem.classList.add('active');
+                        }
+                    });
+                    
+                    if (pageId === 'report') {
+                        loadReport();
+                    }
+                    
+                    if (settings.vibration && 'vibrate' in navigator) {
+                        navigator.vibrate(30);
+                    }
+                });
+            });
+        }
+
+        // ڕێکخستنی فۆرمەکان
+        function setupForms() {
+            document.getElementById('quick-debt-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('quick-name').value;
+                const phone = document.getElementById('quick-phone').value;
+                const amount = parseInt(document.getElementById('quick-amount').value);
+                const date = document.getElementById('quick-date').value;
+                const notes = document.getElementById('quick-notes').value;
+                
+                const newDebt = {
+                    id: Date.now(),
+                    personName: name,
+                    personPhone: phone,
+                    amount: amount,
+                    date: date,
+                    notes: notes,
+                    status: 'quick',
+                    createdAt: new Date().toISOString()
+                };
+                
+                debts.push(newDebt);
+                saveData();
+                
+                this.reset();
+                document.getElementById('quick-date').value = new Date().toISOString().split('T')[0];
+                
+                loadDebts();
+                
+                showNotification('قەرزی خێرا بە سەرکەوتوویی زیادکرا!');
+                
+                if (settings.vibration && 'vibrate' in navigator) {
+                    navigator.vibrate(100);
+                }
+            });
+            
+            document.getElementById('add-person-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('person-name').value;
+                const phone = document.getElementById('person-phone').value;
+                const notes = document.getElementById('person-notes').value;
+                
+                const newPerson = {
+                    id: Date.now(),
+                    name: name,
+                    phone: phone,
+                    notes: notes,
+                    createdAt: new Date().toISOString()
+                };
+                
+                people.push(newPerson);
+                saveData();
+                
+                hideAddPersonView();
+                this.reset();
+                
+                loadPeopleList();
+                
+                showNotification('کەس بە سەرکەوتوویی زیادکرا!');
+                
+                if (settings.vibration && 'vibrate' in navigator) {
+                    navigator.vibrate(100);
+                }
+            });
+            
+            document.getElementById('add-debt-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const personId = parseInt(document.getElementById('debt-person').value);
+                const amount = parseInt(document.getElementById('debt-amount').value);
+                const date = document.getElementById('debt-date').value;
+                const notes = document.getElementById('debt-notes').value;
+                
+                const newDebt = {
+                    id: Date.now(),
+                    personId: personId,
+                    amount: amount,
+                    date: date,
+                    notes: notes,
+                    status: 'active',
+                    createdAt: new Date().toISOString()
+                };
+                
+                debts.push(newDebt);
+                saveData();
+                
+                hideAddDebtView();
+                this.reset();
+                document.getElementById('debt-date').value = new Date().toISOString().split('T')[0];
+                
+                loadDebts();
+                
+                showNotification('قەرز بە سەرکەوتوویی زیادکرا!');
+                
+                if (settings.vibration && 'vibrate' in navigator) {
+                    navigator.vibrate(100);
+                }
+            });
+        }
+
+        // ڕێکخستنی وردەکاری
+        function setupDetailView() {
+            document.querySelectorAll('.close-detail').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.detail-view').forEach(view => {
+                        view.classList.remove('active');
+                    });
+                });
+            });
+            
+            document.getElementById('add-person').addEventListener('click', function() {
+                showAddPersonView();
+            });
+            
+            document.getElementById('edit-detail').addEventListener('click', function() {
+                if (currentPersonId) {
+                    editPerson(currentPersonId);
+                } else if (currentDebtId) {
+                    editDebt(currentDebtId);
+                }
+            });
+            
+            document.getElementById('delete-detail').addEventListener('click', function() {
+                if (currentPersonId) {
+                    deletePerson(currentPersonId);
+                } else if (currentDebtId) {
+                    deleteDebt(currentDebtId);
+                }
+            });
+            
+            document.getElementById('mark-paid').addEventListener('click', function() {
+                if (currentDebtId) {
+                    markDebtAsPaid(currentDebtId);
+                }
+            });
+        }
+
+        // نیشاندانی زیادکردنی کەس
+        function showAddPersonView() {
+            document.getElementById('add-person-view').classList.add('active');
+        }
+
+        // نیشاندانی زیادکردنی قەرز
+        function showAddDebtView(personId) {
+            const select = document.getElementById('debt-person');
+            select.innerHTML = '';
+            
+            people.forEach(person => {
+                const option = document.createElement('option');
+                option.value = person.id;
+                option.textContent = person.name;
+                if (person.id === personId) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+            
+            if (personId) {
+                const person = people.find(p => p.id === personId);
+                if (person) {
+                    document.getElementById('add-debt-subtitle').textContent = `قەرزی ${person.name}`;
+                }
+            }
+            
+            document.getElementById('add-debt-view').classList.add('active');
+        }
+
+        // نیشاندانی وردەکاری کەس
+        function showPersonDetail(personId) {
+            const person = people.find(p => p.id === personId);
+            if (!person) return;
+            
+            currentPersonId = personId;
+            currentDebtId = null;
+            
+            const personDebts = debts.filter(debt => debt.personId === personId);
+            const totalDebt = personDebts.reduce((sum, debt) => sum + debt.amount, 0);
+            const activeDebts = personDebts.filter(debt => debt.status === 'active');
+            const overdueDebts = personDebts.filter(debt => debt.status === 'overdue');
+            const paidDebts = personDebts.filter(debt => debt.status === 'paid');
+            
+            document.getElementById('detail-title').textContent = person.name;
+            document.getElementById('detail-subtitle').textContent = person.phone;
+            
+            let content = `
+                <div class="form-group">
+                    <label>ناوی تەواو</label>
+                    <div class="form-control" style="background-color: var(--light-color);">${person.name}</div>
+                </div>
+                <div class="form-group">
+                    <label>ژمارەی مۆبایل</label>
+                    <div class="form-control" style="background-color: var(--light-color);">${person.phone}</div>
+                </div>
+                <div class="form-group">
+                    <label>تێبینی</label>
+                    <div class="form-control" style="background-color: var(--light-color); min-height: 60px;">${person.notes || '(بێ تێبینی)'}</div>
+                </div>
+                <div class="stats" style="margin-top: 20px;">
+                    <div class="stat-item">
+                        <div class="stat-value">${formatCurrency(totalDebt)}</div>
+                        <div class="stat-label">کۆی قەرز</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${activeDebts.length}</div>
+                        <div class="stat-label">چالاک</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${overdueDebts.length}</div>
+                        <div class="stat-label">کۆن</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${paidDebts.length}</div>
+                        <div class="stat-label">پارەدراو</div>
+                    </div>
+                </div>
+            `;
+            
+            if (activeDebts.length > 0) {
+                content += `
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>قەرزە چالاکەکان</label>
+                        <div style="background-color: var(--light-color); border-radius: var(--border-radius); padding: 15px; max-height: 200px; overflow-y: auto;">
+                `;
+                
+                activeDebts.forEach(debt => {
+                    content += `
+                        <div style="padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>${formatCurrency(debt.amount)}</span>
+                                <span style="color: #666; font-size: 0.9rem;">${formatDate(debt.date)}</span>
+                            </div>
+                            <div style="color: #666; font-size: 0.9rem;">${debt.notes || '(بێ تێبینی)'}</div>
+                        </div>
+                    `;
+                });
+                
+                content += `</div></div>`;
+            }
+            
+            document.getElementById('detail-content').innerHTML = content;
+            document.getElementById('detail-view').classList.add('active');
+        }
+
+        // نیشاندانی وردەکاری قەرز
+        function showDebtDetail(debtId) {
+            const debt = debts.find(d => d.id === debtId);
+            if (!debt) return;
+            
+            currentDebtId = debtId;
+            currentPersonId = null;
+            
+            let personName, personPhone;
+            
+            if (debt.status === 'quick') {
+                personName = debt.personName || 'نەناسراو';
+                personPhone = debt.personPhone || 'نەناسراو';
+            } else {
+                const person = people.find(p => p.id === debt.personId);
+                personName = person ? person.name : 'نەناسراو';
+                personPhone = person ? person.phone : 'نەناسراو';
+            }
+            
+            document.getElementById('detail-title').textContent = `قەرزی ${personName}`;
+            document.getElementById('detail-subtitle').textContent = formatCurrency(debt.amount);
+            
+            const statusText = debt.status === 'active' ? 'چالاک' : 
+                             debt.status === 'overdue' ? 'کۆن' : 
+                             debt.status === 'paid' ? 'پارەدراو' : 'خێرا';
+            
+            let content = `
+                <div class="form-group">
+                    <label>کەس</label>
+                    <div class="form-control" style="background-color: var(--light-color);">${personName}</div>
+                </div>
+                <div class="form-group">
+                    <label>ژمارەی مۆبایل</label>
+                    <div class="form-control" style="background-color: var(--light-color);">${personPhone}</div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>بڕی پارە</label>
+                        <div class="form-control" style="background-color: var(--light-color);">${formatCurrency(debt.amount)}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>بەروار</label>
+                        <div class="form-control" style="background-color: var(--light-color);">${formatDate(debt.date)}</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>تێبینی</label>
+                    <div class="form-control" style="background-color: var(--light-color); min-height: 60px;">${debt.notes || '(بێ تێبینی)'}</div>
+                </div>
+                <div class="form-group">
+                    <label>دۆخ</label>
+                    <div class="form-control" style="background-color: var(--light-color);">
+                        ${statusText}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('detail-content').innerHTML = content;
+            document.getElementById('detail-view').classList.add('active');
+        }
+
+        // دەستکاری کەس
+        function editPerson(personId) {
+            const person = people.find(p => p.id === personId);
+            if (!person) return;
+            
+            const newName = prompt('ناوی نوێ:', person.name);
+            if (newName === null) return;
+            
+            const newPhone = prompt('ژمارەی مۆبایلی نوێ:', person.phone);
+            if (newPhone === null) return;
+            
+            const newNotes = prompt('تێبینی نوێ:', person.notes || '');
+            
+            person.name = newName;
+            person.phone = newPhone;
+            person.notes = newNotes;
+            
+            saveData();
+            loadPeopleList();
+            showPersonDetail(personId);
+            
+            showNotification('زانیارییەکانی کەس نوێکرایەوە!');
+        }
+
+        // دەستکاری قەرز
+        function editDebt(debtId) {
+            const debt = debts.find(d => d.id === debtId);
+            if (!debt) return;
+            
+            const newAmount = prompt('بڕی پارەی نوێ:', debt.amount);
+            if (newAmount === null) return;
+            
+            const newNotes = prompt('تێبینی نوێ:', debt.notes || '');
+            
+            debt.amount = parseInt(newAmount);
+            debt.notes = newNotes;
+            
+            saveData();
+            loadDebts();
+            showDebtDetail(debtId);
+            
+            showNotification('قەرز نوێکرایەوە!');
+        }
+
+        // نیشاندانی وەک پارەدراو
+        function markDebtAsPaid(debtId) {
+            const debt = debts.find(d => d.id === debtId);
+            if (!debt) return;
+            
+            if (confirm('ئەم قەرزە وەک پارەدراو نیشان بدەیت؟')) {
+                debt.status = 'paid';
+                saveData();
+                loadDebts();
+                document.getElementById('detail-view').classList.remove('active');
+                
+                showNotification('قەرز وەک پارەدراو نیشاندرا!');
+            }
+        }
+
+        // سڕینەوەی کەس
+        function deletePerson(personId) {
+            if (!confirm('دڵنیای لە سڕینەوەی ئەم کەسە و هەموو قەرزەکانی؟')) {
+                return;
+            }
+            
+            people = people.filter(p => p.id !== personId);
+            debts = debts.filter(d => d.personId !== personId);
+            
+            saveData();
+            document.getElementById('detail-view').classList.remove('active');
+            loadPeopleList();
+            loadDebts();
+            
+            showNotification('کەس و قەرزەکانی سڕانەوە!');
+        }
+
+        // سڕینەوەی قەرز
+        function deleteDebt(debtId) {
+            if (!confirm('دڵنیای لە سڕینەوەی ئەم قەرزە؟')) {
+                return;
+            }
+            
+            debts = debts.filter(d => d.id !== debtId);
+            saveData();
+            
+            document.getElementById('detail-view').classList.remove('active');
+            loadDebts();
+            
+            showNotification('قەرز سڕایەوە!');
+        }
+
+        // داخستنی زیادکردنی کەس
+        function hideAddPersonView() {
+            document.getElementById('add-person-view').classList.remove('active');
+        }
+
+        // داخستنی زیادکردنی قەرز
+        function hideAddDebtView() {
+            document.getElementById('add-debt-view').classList.remove('active');
+        }
+
+        // ڕێکخستنی ڕاپۆرت
+        function setupReport() {
+            document.getElementById('prev-month').addEventListener('click', function() {
+                currentMonth--;
+                if (currentMonth < 1) {
+                    currentMonth = 12;
+                    currentYear--;
+                }
+                loadReport();
+            });
+            
+            document.getElementById('next-month').addEventListener('click', function() {
+                currentMonth++;
+                if (currentMonth > 12) {
+                    currentMonth = 1;
+                    currentYear++;
+                }
+                loadReport();
+            });
+            
+            document.getElementById('export-data').addEventListener('click', function() {
+                const data = {
+                    people: people,
+                    debts: debts,
+                    settings: settings,
+                    exportedAt: new Date().toISOString()
+                };
+                
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = `debt-data-${new Date().toISOString().slice(0,10)}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                showNotification('زانیارییەکان بە سەرکەوتوویی هەناردەکران!');
+            });
+            
+            document.getElementById('import-data').addEventListener('click', function() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                
+                input.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (!file) return;
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const data = JSON.parse(e.target.result);
+                            
+                            if (data.people && data.debts) {
+                                if (confirm('ئەمە هەموو زانیارییەکانی ئێستا لەبەر دەگرێت. بەردەوامبیت؟')) {
+                                    people = data.people;
+                                    debts = data.debts;
+                                    if (data.settings) settings = data.settings;
+                                    saveData();
+                                    
+                                    loadPeopleList();
+                                    loadDebts();
+                                    loadReport();
+                                    applySettings();
+                                    
+                                    showNotification('زانیارییەکان بە سەرکەوتوویی هێنرانەوە!');
+                                }
+                            } else {
+                                showNotification('فۆرماتی فایلی زانیارییەکان دروست نیە!', 'error');
+                            }
+                        } catch (err) {
+                            showNotification('هەڵە لە خوێندنەوەی فایلەکە: ' + err.message, 'error');
+                        }
+                    };
+                    
+                    reader.readAsText(file);
+                });
+                
+                input.click();
+            });
+            
+            document.getElementById('backup-data').addEventListener('click', function() {
+                const backup = {
+                    people: people,
+                    debts: debts,
+                    settings: settings,
+                    backedUpAt: new Date().toISOString()
+                };
+                
+                localStorage.setItem('debtBackup', JSON.stringify(backup));
+                localStorage.setItem('lastBackup', new Date().toISOString());
+                
+                updateSystemInfo();
+                showNotification('پاشەکەوت بە سەرکەوتوویی دروستکرا!');
+            });
+            
+            document.getElementById('reset-data').addEventListener('click', function() {
+                if (confirm('دڵنیای لە سڕینەوەی هەموو زانیارییەکان؟ ئەم کارە گەڕانەوەی نیە!')) {
+                    localStorage.clear();
+                    people = [];
+                    debts = [];
+                    settings = {
+                        autoDate: true,
+                        monthlyAlert: true,
+                        autoOldDebts: true,
+                        vibration: true,
+                        soundNotifications: false,
+                        theme: 'blue',
+                        darkMode: false,
+                        largeFonts: false
+                    };
+                    
+                    saveData();
+                    applySettings();
+                    loadPeopleList();
+                    loadDebts();
+                    loadReport();
+                    
+                    showNotification('هەموو زانیارییەکان سڕانەوە!');
+                }
+            });
+        }
+
+        // بارکردنی ڕاپۆرت
+        function loadReport() {
+            const monthNames = ["کانوونی دووەم", "شوبات", "ئازار", "نیسان", "ئایار", "حوزەیران", 
+                              "تەمموز", "ئاب", "ئەیلول", "تشرینی یەکەم", "تشرینی دووەم", "کانوونی یەکەم"];
+            document.getElementById('report-month').textContent = `${monthNames[currentMonth-1]} ${currentYear}`;
+            
+            const monthDebts = debts.filter(debt => {
+                const debtDate = new Date(debt.date);
+                return debtDate.getMonth() + 1 === currentMonth && debtDate.getFullYear() === currentYear;
+            });
+            
+            const totalDebts = monthDebts.reduce((sum, debt) => sum + debt.amount, 0);
+            const paidDebts = monthDebts.filter(debt => debt.status === 'paid').reduce((sum, debt) => sum + debt.amount, 0);
+            const unpaidDebts = monthDebts.filter(debt => debt.status === 'active' || debt.status === 'quick').reduce((sum, debt) => sum + debt.amount, 0);
+            
+            document.getElementById('total-debts').textContent = formatCurrency(totalDebts);
+            document.getElementById('total-people').textContent = people.length;
+            document.getElementById('paid-debts').textContent = formatCurrency(paidDebts);
+            document.getElementById('unpaid-debts').textContent = formatCurrency(unpaidDebts);
+            
+            const collectionRate = totalDebts > 0 ? Math.round((paidDebts / totalDebts) * 100) : 0;
+            document.getElementById('collection-rate').textContent = collectionRate + '%';
+            document.getElementById('collection-progress').style.width = collectionRate + '%';
+            
+            const distribution = document.getElementById('debt-distribution');
+            distribution.innerHTML = '';
+            
+            if (monthDebts.length === 0) {
+                distribution.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>هیچ زانیارییەک نیە</h3>
+                        <p>هیچ قەرزێک نیە بۆ ئەم مانگە</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const debtByPerson = {};
+            monthDebts.forEach(debt => {
+                let personName;
+                
+                if (debt.status === 'quick') {
+                    personName = debt.personName || 'قەرزی خێرا';
+                } else {
+                    const person = people.find(p => p.id === debt.personId);
+                    personName = person ? person.name : 'نەناسراو';
+                }
+                
+                if (!debtByPerson[personName]) {
+                    debtByPerson[personName] = 0;
+                }
+                
+                debtByPerson[personName] += debt.amount;
+            });
+            
+            let distributionHTML = '<div style="padding: 15px;">';
+            
+            Object.keys(debtByPerson).forEach(personName => {
+                const amount = debtByPerson[personName];
+                const percentage = Math.round((amount / totalDebts) * 100);
+                
+                distributionHTML += `
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>${personName}</span>
+                            <span>${formatCurrency(amount)} (${percentage}%)</span>
+                        </div>
+                        <div style="height: 8px; background-color: rgba(0,0,0,0.05); border-radius: 4px; overflow: hidden;">
+                            <div style="height: 100%; width: ${percentage}%; background-color: var(--primary-color);"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            distributionHTML += '</div>';
+            distribution.innerHTML = distributionHTML;
+        }
+
+        // ڕێکخستنی بۆتۆم نێڤ
+        function setupBottomNav() {
+            document.querySelectorAll('.nav-item').forEach(navItem => {
+                navItem.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const pageId = this.dataset.page;
+                    
+                    document.querySelectorAll('.nav-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.page').forEach(page => {
+                        page.classList.remove('active');
+                        if (page.id === pageId) {
+                            page.classList.add('active');
+                        }
+                    });
+                    
+                    document.querySelectorAll('.tab').forEach(tab => {
+                        tab.classList.remove('active');
+                        if (tab.dataset.page === pageId) {
+                            tab.classList.add('active');
+                        }
+                    });
+                    
+                    if (pageId === 'report') {
+                        loadReport();
+                    }
+                    
+                    if (settings.vibration && 'vibrate' in navigator) {
+                        navigator.vibrate(30);
+                    }
+                });
+            });
+        }
+
+        // چێککردن بۆ قەرزە کۆنەکان
+        function checkForOverdueDebts() {
+            if (!settings.autoOldDebts) return;
+            
+            const now = new Date();
+            const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+            
+            let updated = false;
+            
+            debts.forEach(debt => {
+                const debtDate = new Date(debt.date);
+                if (debtDate < oneMonthAgo && debt.status === 'active') {
+                    debt.status = 'overdue';
+                    updated = true;
+                }
+            });
+            
+            if (updated) {
+                saveData();
+                loadDebts();
+                
+                if (settings.monthlyAlert) {
+                    showNotification('هەندێک قەرز وەک کۆن نیشاندران!', 'warning');
+                }
+            }
+        }
+
+        // نیشاندانی نۆتیفیکەیشن
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            
+            if (type === 'error') {
+                notification.style.backgroundColor = 'var(--danger-color)';
+            } else if (type === 'warning') {
+                notification.style.backgroundColor = 'var(--warning-color)';
+                notification.style.color = '#333';
+            } else {
+                notification.style.backgroundColor = 'var(--success-color)';
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+            
+            if (settings.soundNotifications) {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = type === 'error' ? 300 : 800;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.5);
+                } catch (e) {
+                    console.log('دەنگ پشتگیری ناکرێت');
+                }
+            }
+        }
+
+        // نوێکردنەوەی زانیاری سیستەم
+        function updateSystemInfo() {
+            document.getElementById('sys-total-people').textContent = people.length;
+            document.getElementById('sys-total-debts').textContent = debts.length;
+            
+            const dataSize = JSON.stringify(people).length + JSON.stringify(debts).length + JSON.stringify(settings).length;
+            document.getElementById('sys-data-size').textContent = Math.round(dataSize / 1024) + ' KB';
+            
+            const lastBackup = localStorage.getItem('lastBackup');
+            if (lastBackup) {
+                const backupDate = new Date(lastBackup);
+                document.getElementById('sys-last-backup').textContent = backupDate.toLocaleDateString('fa-IR');
+            } else {
+                document.getElementById('sys-last-backup').textContent = 'هەرگیز';
+            }
+        }
+
+        // چێکی خۆکار بۆ قەرزە کۆنەکان
+        setInterval(checkForOverdueDebts, 24 * 60 * 60 * 1000);
+        
+        // چێککردن بۆ پشتگیری ڤایبرەیشن
+        if ('vibrate' in navigator) {
+            console.log('ڤایبرەیشن پشتگیری دەکرێت');
+        }
+    </script>
+</body>
+</html>
